@@ -1,7 +1,7 @@
-package com.fishedee.erp.framework.auth;
+package com.fishedee.security_boost;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fishedee.erp.user.business.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,54 +14,42 @@ import java.util.List;
  * Created by fish on 2021/4/26.
  */
 //UserDetail需要序列化的,要确保每个字段都可以被序列化.
-public class MyUserDetail implements UserDetails {
+@Data
+public class DefaultUserDetail implements UserDetails {
     private static final long serialVersionUID = 4359709211352400087L;
+
+    private String id;
 
     private String name;
 
     @JsonIgnore
     private String password;
 
-    private Long userId;
+    private String roles;
 
-    private User.Role role;
+    private int enabled;
 
-    private User.IsEnabled isEnabled;
-
-    public MyUserDetail(User user){
-        this.name = user.getName();
-        this.password = user.getPassword();
-        this.userId = user.getId();
-        this.role = user.getRole();
-        this.isEnabled = user.getIsEnabled();
+    public DefaultUserDetail(){
     }
 
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
+        String[] roleList = this.roles.split(",");
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(this.role.toString()));
+        for( int i = 0 ;i != roleList.length;i++){
+            String single = roleList[i].trim();
+            if( single.length() == 0 ){
+                continue;
+            }
+            authorities.add(new SimpleGrantedAuthority(single));
+        }
         return authorities;
     }
 
-    public Long getUserId(){
-        return this.userId;
-    }
-
-    public String getPassword(){
-        return this.password;
-    }
-
+    @Override
     public String getUsername(){
         return this.name;
     }
-
-    public String getName(){return this.name;}
-
-    public User.Role getRole(){
-        return this.role;
-    }
-
-    public User.IsEnabled getIsEnabled(){return this.isEnabled;}
-
     @Override
     public boolean isAccountNonExpired(){
         return true;
@@ -79,13 +67,13 @@ public class MyUserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled(){
-        return this.isEnabled == User.IsEnabled.ENABLE;
+        return this.enabled == 1;
     }
 
     @Override
     public boolean equals(Object obj){
-        if( obj instanceof MyUserDetail ){
-            return this.getUsername().equals(((MyUserDetail) obj).getUsername());
+        if( obj instanceof DefaultUserDetail){
+            return this.getUsername().equals(((DefaultUserDetail) obj).getUsername());
         }else{
             return false;
         }

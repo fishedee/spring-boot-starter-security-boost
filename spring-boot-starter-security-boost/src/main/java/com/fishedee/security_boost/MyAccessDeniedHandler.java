@@ -1,4 +1,4 @@
-package com.fishedee.erp.framework.auth;
+package com.fishedee.security_boost;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -11,7 +11,6 @@ import java.io.IOException;
 /**
  * Created by fish on 2021/4/26.
  */
-@Component
 public class MyAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(javax.servlet.http.HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException{

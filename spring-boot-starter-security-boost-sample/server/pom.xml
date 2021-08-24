@@ -18,7 +18,7 @@
   </parent>
 
   <properties>
-    <start-class>com.fishedee.web_boost.sample.App</start-class>
+    <start-class>com.fishedee.security_boost.sample.App</start-class>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <skipTests>true</skipTests>
   </properties>
@@ -33,14 +33,18 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.20</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.fishedee.web_boost</groupId>
-      <artifactId>spring-boot-starter-web-boost</artifactId>
+      <groupId>com.fishedee.security_boost</groupId>
+      <artifactId>spring-boot-starter-security-boost</artifactId>
       <version>1.0</version>
     </dependency>
     <dependency>

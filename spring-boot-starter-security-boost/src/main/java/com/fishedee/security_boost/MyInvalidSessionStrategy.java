@@ -1,7 +1,5 @@
-package com.fishedee.erp.framework.auth;
+package com.fishedee.security_boost;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fishedee.erp.user.business.User;
-import com.fishedee.erp.framework.mvc.MyResponseBodyAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.session.InvalidSessionStrategy;
 import org.springframework.stereotype.Component;
@@ -16,7 +14,6 @@ import java.io.PrintWriter;
  * Created by fish on 2021/4/27.
  */
 //会话过期的策略,不应该被设置,因为会话虽然过期,但是可以通过Remember-Me登录
-@Component
 public class MyInvalidSessionStrategy implements InvalidSessionStrategy {
     @Autowired
     private ObjectMapper mapper;
@@ -26,7 +23,7 @@ public class MyInvalidSessionStrategy implements InvalidSessionStrategy {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        String result = mapper.writeValueAsString(new MyResponseBodyAdvice.ResponseResult(0,"你的会话过期了,请重新登录",null));
+        String result = mapper.writeValueAsString(new SecurityBoostResponse(50003,"你的会话过期了,请重新登录",null));
         PrintWriter writer = response.getWriter();
         writer.write(result);
         writer.flush();

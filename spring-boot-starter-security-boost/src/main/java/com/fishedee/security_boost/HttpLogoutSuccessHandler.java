@@ -1,7 +1,6 @@
-package com.fishedee.erp.framework.auth;
+package com.fishedee.security_boost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fishedee.erp.framework.mvc.MyResponseBodyAdvice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,7 +16,6 @@ import java.io.PrintWriter;
  * Created by fish on 2021/4/26.
  */
 //登出成功的处理器
-@Component
 @Slf4j
 public class HttpLogoutSuccessHandler implements LogoutSuccessHandler {
     @Autowired
@@ -30,7 +28,7 @@ public class HttpLogoutSuccessHandler implements LogoutSuccessHandler {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
 
-        String result = mapper.writeValueAsString(new MyResponseBodyAdvice.ResponseResult(0,"",null));
+        String result = mapper.writeValueAsString(new SecurityBoostResponse(0,"",null));
 
         PrintWriter writer = response.getWriter();
         writer.write(result);

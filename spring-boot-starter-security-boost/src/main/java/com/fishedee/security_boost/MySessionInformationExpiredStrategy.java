@@ -1,7 +1,6 @@
-package com.fishedee.erp.framework.auth;
+package com.fishedee.security_boost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fishedee.erp.framework.mvc.MyResponseBodyAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
@@ -17,7 +16,6 @@ import java.io.PrintWriter;
 /**
  * Created by fish on 2021/4/27.
  */
-@Component
 public class MySessionInformationExpiredStrategy implements SessionInformationExpiredStrategy {
     @Autowired
     ObjectMapper mapper = new ObjectMapper();
@@ -43,7 +41,7 @@ public class MySessionInformationExpiredStrategy implements SessionInformationEx
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        String result = mapper.writeValueAsString(new MyResponseBodyAdvice.ResponseResult(20001,"你的账号在其他地方登录了",null));
+        String result = mapper.writeValueAsString(new SecurityBoostResponse(50004,"你的账号在其他地方登录了",null));
         PrintWriter writer = response.getWriter();
         writer.write(result);
         writer.flush();

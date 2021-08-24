@@ -1,6 +1,6 @@
-package com.fishedee.erp.framework.auth;
+package com.fishedee.security_boost;
 
-import com.fishedee.erp.framework.auth.*;
+import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,20 +11,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import javax.sql.DataSource;
-
-/**
- * Created by fish on 2021/4/26.
- */
-@Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private MyUserDetailService myUserDetailService;
+    private UserDetailsService defaultUserDetailService;
 
     @Autowired
     private HttpAuthenticationEntryPoint authenticationEntryPoint;
@@ -47,36 +43,49 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private HttpLogoutSuccessHandler logoutSuccessHandler;
 
-    //重置密码编码器
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        PasswordEncoder encoder = new BCryptPasswordEncoder(12);
-        return encoder;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return myUserDetailService;
-    }
+    @Autowired
+    private IsLoginFilter isLoginFilter;
+
+    @Autowired
+    private SecurityBoostProperties securityBoostProperties;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myUserDetailService)
-                .passwordEncoder(passwordEncoder());
+        auth.userDetailsService(defaultUserDetailService)
+                .passwordEncoder(passwordEncoder);
 
     }
 
-    @Autowired
-    private DataSource dataSource;
-
+    protected void configureAuthorizeRequests(HttpSecurity http) throws Exception{
+        http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/favicon.ico").permitAll()
+                .antMatchers("/index.html").permitAll()
+                .antMatchers(securityBoostProperties.getLoginUrl()).permitAll()
+                .antMatchers(securityBoostProperties.getLogoutUrl()).permitAll()
+                .anyRequest().authenticated();
+    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
-        jdbcTokenRepository.setDataSource(dataSource);
 
-        http.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
+        if( securityBoostProperties.isCsrfEnable()){
+            http.csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        }
+        if( securityBoostProperties.isRememberMeEnabled() ){
+            //记住我,必须用check-box传入一个remeber-me的字段
+            //使用记住我以后,maximumSessions为1是没有意义的,因为他能被自动登录
+            http.rememberMe()
+                    .userDetailsService(defaultUserDetailService)
+                    .tokenRepository(jdbcTokenRepository)
+                    .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds());
+        }
+
+        http
                 //设置认证异常与授权异常的处理
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
@@ -86,24 +95,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //必须要用urlEncode的参数来传入
                 .formLogin()
                 .permitAll()
-                .loginProcessingUrl("/login/login")
-                .usernameParameter("user")//登录的用户名字段名称
-                .passwordParameter("password")//登录的密码字段名称
+                .loginProcessingUrl(securityBoostProperties.getLoginUrl())
+                .usernameParameter(securityBoostProperties.getLoginUsernameParameter())//登录的用户名字段名称
+                .passwordParameter(securityBoostProperties.getLoginPasswordParameter())//登录的密码字段名称
                 .successHandler(authSuccessHandler)
                 .failureHandler(authFailureHandler)
-                .and()
-                //记住我,必须用check-box传入一个remeber-me的字段
-                //使用记住我以后,maximumSessions为1是没有意义的,因为他能被自动登录
-                .rememberMe()
-                .userDetailsService(myUserDetailService)
-                .tokenRepository(jdbcTokenRepository)
-                //3天内免登录
-                .tokenValiditySeconds(60*60*24*3)
                 .and()
                 //登出的处理
                 .logout()
                 .permitAll()
-                .logoutUrl("/login/logout")
+                .logoutUrl(securityBoostProperties.getLogoutUrl())
                 .logoutSuccessHandler(logoutSuccessHandler)
                 .and()
                 //单个用户的最大可在线的会话数
@@ -112,15 +113,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
 
-        http.authorizeRequests()
-                .antMatchers("/js/**").permitAll()
-                .antMatchers("/font/**").permitAll()
-                .antMatchers("/manage/**").permitAll()
-                .antMatchers("/").permitAll()
-                .antMatchers("/favicon.ico").permitAll()
-                .antMatchers("/index.html").permitAll()
-                .antMatchers("/login/login").permitAll()
-                .antMatchers("/login/islogin").permitAll()
-                .anyRequest().authenticated();
+        http.addFilterAfter(isLoginFilter,UsernamePasswordAuthenticationFilter.class);
+        configureAuthorizeRequests(http);
     }
 }

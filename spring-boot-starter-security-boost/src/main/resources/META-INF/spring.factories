@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.fishedee.web_boost.autoconfig.WebBoostAutoConfiguration
+  com.fishedee.security_boost.autoconfig.SecurityBoostAutoConfiguration

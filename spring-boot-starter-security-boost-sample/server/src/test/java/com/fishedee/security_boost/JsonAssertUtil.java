@@ -1,4 +1,4 @@
-package com.fishedee.web_boost;
+package com.fishedee.security_boost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skyscreamer.jsonassert.JSONAssert;
