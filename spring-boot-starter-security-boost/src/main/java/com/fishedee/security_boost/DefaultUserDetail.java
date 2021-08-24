@@ -27,12 +27,13 @@ public class DefaultUserDetail implements UserDetails {
 
     private String roles;
 
-    private int enabled;
+    private int is_enabled;
 
     public DefaultUserDetail(){
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities(){
         String[] roleList = this.roles.split(",");
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -47,27 +48,33 @@ public class DefaultUserDetail implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getUsername(){
         return this.name;
     }
+
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired(){
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked(){
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired(){
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled(){
-        return this.enabled == 1;
+        return this.is_enabled == 1;
     }
 
     @Override

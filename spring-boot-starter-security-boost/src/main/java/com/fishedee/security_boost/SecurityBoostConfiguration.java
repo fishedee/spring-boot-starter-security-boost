@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import javax.sql.DataSource;
+
 @EnableWebSecurity
 public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -52,6 +54,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityBoostProperties securityBoostProperties;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(defaultUserDetailService)
@@ -71,6 +76,7 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
 
         if( securityBoostProperties.isCsrfEnable()){
             http.csrf()
@@ -80,6 +86,7 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
             //记住我,必须用check-box传入一个remeber-me的字段
             //使用记住我以后,maximumSessions为1是没有意义的,因为他能被自动登录
             http.rememberMe()
+                    .rememberMeParameter(securityBoostProperties.getRememberMeParameter())
                     .userDetailsService(defaultUserDetailService)
                     .tokenRepository(jdbcTokenRepository)
                     .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds());

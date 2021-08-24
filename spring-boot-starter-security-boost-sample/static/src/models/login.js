@@ -15,8 +15,8 @@ export default {
         method:'GET',
         autoCheck:true,
       });
-      if( user.userId != 0 ){
-        user.role = user.role;
+      if( user ){
+        user.role = user.roles;
         await dispatch({
           type:'setCurrentLogin',
           payload:user

@@ -112,11 +112,15 @@ let webpackConfig = {
 		port:9596,
 		proxy:{
 			"/": {
-				target:"http://localhost:9090/",
+				target:"http://localhost:9595",
 				changeOrigin: true
 			}
 		}
 	}
+}
+
+if( !isDevelopment ){
+	webpackConfig.output.publicPath = "https://yinghaostatic.fishedee.com"
 }
 
 if( !isDevelopment ){

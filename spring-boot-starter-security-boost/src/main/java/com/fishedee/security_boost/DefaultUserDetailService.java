@@ -28,7 +28,7 @@ public class DefaultUserDetailService implements UserDetailsService {
 
     @PostConstruct
     public void init(){
-        selectByNameSql = String.format("select id,name,password,roles,enabled from %s where name = ?",securityBoostProperties.getUserTable());
+        selectByNameSql = String.format("select id,name,password,roles,is_enabled from %s where name = ?",securityBoostProperties.getUserTable());
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{

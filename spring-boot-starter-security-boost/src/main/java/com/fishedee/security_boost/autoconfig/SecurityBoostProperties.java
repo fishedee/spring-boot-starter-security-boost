@@ -25,5 +25,7 @@ public class SecurityBoostProperties {
 
     private boolean rememberMeEnabled = true;
 
+    private String rememberMeParameter = "remember-me";
+
     private int rememberMeSeconds = 60*60*24*7;//7天
 }
