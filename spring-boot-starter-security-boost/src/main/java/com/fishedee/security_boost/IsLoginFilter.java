@@ -46,6 +46,7 @@ public class IsLoginFilter extends HttpFilter {
         if( loginUser != null){
             userDetails = loginUser.getUserDetails();
         }
+        log.info("islogin {}",userDetails);
         String result = objectMapper.writeValueAsString(new SecurityBoostResponse(0,"",userDetails));
         PrintWriter writer = response.getWriter();
         writer.write(result);
