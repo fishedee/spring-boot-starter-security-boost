@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by fish on 2021/4/26.
@@ -27,7 +28,7 @@ public class DefaultUserDetail implements UserDetails {
 
     private String roles;
 
-    private int is_enabled;
+    private String is_enabled;
 
     public DefaultUserDetail(){
     }
@@ -74,7 +75,7 @@ public class DefaultUserDetail implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isEnabled(){
-        return this.is_enabled == 1;
+        return this.is_enabled.equalsIgnoreCase("enable");
     }
 
     @Override

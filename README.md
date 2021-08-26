@@ -23,7 +23,7 @@ SpringBoost的Security工具库，功能包括有：
 <dependency>
     <groupId>com.github.fishedee</groupId>
     <artifactId>spring-boot-starter-security-boost</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 </dependency>
 ```
 
@@ -45,7 +45,7 @@ create table my_user(
      password char(60) not null,
      roles varchar(128) not null,
      remark varchar(255) not null,
-     is_enabled integer not null,
+     is_enabled char(16) not null,
      primary key( id )
 );
 
@@ -59,8 +59,8 @@ create table persistent_logins(
 
 
 insert into my_user(id,name,roles,remark,is_enabled,password) values
-(10001,'admin','admin','',1,'$2a$12$WtxiMJuXjgzCpa1OWT8hR.wMpxq0DbeF1fMpCJbdzCdhdYte1ZtfC'),
-(10002,'fish','clerk','',1,'$2a$12$WtxiMJuXjgzCpa1OWT8hR.wMpxq0DbeF1fMpCJbdzCdhdYte1ZtfC');
+(10001,'admin','admin','','ENABLE','$2a$12$WtxiMJuXjgzCpa1OWT8hR.wMpxq0DbeF1fMpCJbdzCdhdYte1ZtfC'),
+(10002,'fish','clerk','','ENABLE','$2a$12$WtxiMJuXjgzCpa1OWT8hR.wMpxq0DbeF1fMpCJbdzCdhdYte1ZtfC');
 ```
 
 登录表，以及自动登录记录表
