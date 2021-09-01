@@ -1,6 +1,7 @@
 package com.fishedee.security_boost;
 
 import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import javax.sql.DataSource;
 
+
+@Slf4j
 public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -78,10 +81,14 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
         jdbcTokenRepository.setDataSource(dataSource);
 
+        log.info("{}", securityBoostProperties.isCsrfEnable());
         if( securityBoostProperties.isCsrfEnable()){
             http.csrf()
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        }else{
+            http.csrf().disable();
         }
+
         if( securityBoostProperties.isRememberMeEnabled() ){
             //记住我,必须用check-box传入一个remeber-me的字段
             //使用记住我以后,maximumSessions为1是没有意义的,因为他能被自动登录
