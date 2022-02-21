@@ -21,6 +21,10 @@ public class SecurityBoostProperties {
 
     private String isLoginUrl = "/login/islogin";
 
+    private boolean switchLoginEnable = true;
+
+    private String switchLoginUrl = "/login/switch";
+
     private boolean csrfEnable = true;
 
     private boolean rememberMeEnabled = true;

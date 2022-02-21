@@ -1,7 +1,7 @@
 package com.fishedee.security_boost;
 
-import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import lombok.extern.slf4j.Slf4j;
+import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import javax.sql.DataSource;
@@ -76,12 +78,21 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(securityBoostProperties.getLogoutUrl()).permitAll()
                 .anyRequest().authenticated();
     }
+
+    public SwitchUserFilter switchUserFilter(){
+        SwitchUserFilter filter = new SwitchUserFilter();
+        filter.setUserDetailsService(defaultUserDetailService);
+        filter.setSwitchUserUrl(securityBoostProperties.getSwitchLoginUrl());
+        filter.setSuccessHandler(authSuccessHandler);
+        filter.setFailureHandler(authFailureHandler);
+        return filter;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
         jdbcTokenRepository.setDataSource(dataSource);
 
-        log.info("{}", securityBoostProperties.isCsrfEnable());
         if( securityBoostProperties.isCsrfEnable()){
             http.csrf()
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
@@ -128,6 +139,10 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
 
         http.addFilterAfter(isLoginFilter, AnonymousAuthenticationFilter.class);
+
+        if( securityBoostProperties.isSwitchLoginEnable() ){
+            http.addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class);
+        }
         configureAuthorizeRequests(http);
     }
 }
