@@ -6,6 +6,7 @@ import StandardQuery from '@/components/StandardQuery';
 import StandardTable from '@/components/StandardTable';
 import qs from 'qs';
 import cache from '@/utils/cache';
+import axios from 'axios';
 
 const roleOption = {
 	1:'管理员',
@@ -107,7 +108,7 @@ export default class List extends React.Component{
 		 const columns = [
 	      {
 	        title: '用户ID',
-	        dataIndex: 'userId',
+	        dataIndex: 'id',
 	      },
 	      {
 	        title: '账号',
@@ -115,9 +116,21 @@ export default class List extends React.Component{
 	      },
 	      {
 	        title: '操作',
-	        render: (val,data) => (
-	        	<div/>
-	        ),
+	        render: (val,data) => {
+				const switchUser = async ()=>{
+					await axios({
+						method:'POST',
+						url:'/login/switch',
+						params:{
+							username:data.name,
+						}
+					});
+					window.location.reload();
+				}
+	        	return (<div>
+					<a onClick={switchUser}>切换用户</a>
+					</div>);	        
+			},
 	      },
 	    ];
 		return (

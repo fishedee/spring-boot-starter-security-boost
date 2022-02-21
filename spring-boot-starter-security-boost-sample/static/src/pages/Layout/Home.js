@@ -11,7 +11,7 @@ import style from './Home.less';
 import {connect} from 'redva';
 import cache from '@/utils/cache';
 
-@authority(['admin'])
+@authority(['admin','clerk'])
 @connect((state)=>{
 	return {login:state.login};
 })
