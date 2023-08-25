@@ -25,6 +25,12 @@ public class SecurityBoostAutoConfiguration {
         this.properties = properties;
     }
 
+    @Bean
+    @ConditionalOnMissingBean(RememberMeSuccessListener.class)
+    @ConditionalOnProperty(value = "spring.security-boost.enable", havingValue = "true")
+    public RememberMeSuccessListener rememberMeSuccessListener(){
+        return new RememberMeSuccessListener();
+    }
 
     //密码编码器默认Bean
     @Bean
@@ -119,7 +125,6 @@ public class SecurityBoostAutoConfiguration {
         return new DefaultLoginUserHolderImpl();
     }
 
-    /* 不能在Filter里面做isLogin检查，因为RememberMeFilter有时候会直接忽略后面所有的Filter
     //默认的loginController
     @Bean
     @ConditionalOnMissingBean(IsLoginFilter.class)
@@ -127,5 +132,4 @@ public class SecurityBoostAutoConfiguration {
     public IsLoginFilter isLoginFilter(){
         return new IsLoginFilter();
     }
-     */
 }

@@ -24,7 +24,7 @@ SpringBoost的Security工具库，功能包括有：
 <dependency>
     <groupId>com.github.fishedee</groupId>
     <artifactId>spring-boot-starter-security-boost</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
 </dependency>
 ```
 

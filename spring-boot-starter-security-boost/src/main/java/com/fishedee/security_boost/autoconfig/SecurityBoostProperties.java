@@ -19,6 +19,8 @@ public class SecurityBoostProperties {
 
     private String logoutUrl = "/login/logout";
 
+    private String isLoginUrl = "/login/islogin";
+
     private boolean switchLoginEnable = true;
 
     private String switchLoginUrl = "/login/switch";

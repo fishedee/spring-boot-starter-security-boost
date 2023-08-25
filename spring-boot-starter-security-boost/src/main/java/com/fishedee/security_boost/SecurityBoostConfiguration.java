@@ -68,6 +68,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private IsLoginFilter isLoginFilter;
+
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(defaultUserDetailService)
@@ -105,7 +108,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
         }else{
             http.csrf().disable();
         }
-
         if( securityBoostProperties.isRememberMeEnabled() ){
             //记住我,必须用check-box传入一个remeber-me的字段
             //使用记住我以后,maximumSessions为1是没有意义的,因为他能被自动登录
@@ -113,13 +115,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                     .rememberMeParameter(securityBoostProperties.getRememberMeParameter())
                     .userDetailsService(defaultUserDetailService)
                     .tokenRepository(jdbcTokenRepository)
-                    .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds())
-                    .authenticationSuccessHandler(new AuthenticationSuccessHandler(){
-                        @Override
-                        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
-                            writeTenantAfterAuthSuccessHandler.onHandle(request,response);
-                        }
-                    });
+                    .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds());
+            //这里不能直接用authenticationSuccessHandler，看[这里](https://github.com/spring-projects/spring-security/issues/13743)
+            //.authenticationSuccessHandler()
         }
 
         http
@@ -149,6 +147,8 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 //.invalidSessionStrategy(invalidSessionStrategy)
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
+
+        http.addFilterAfter(isLoginFilter, AnonymousAuthenticationFilter.class);
 
         if( securityBoostProperties.isSwitchLoginEnable() ){
             http.addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class);

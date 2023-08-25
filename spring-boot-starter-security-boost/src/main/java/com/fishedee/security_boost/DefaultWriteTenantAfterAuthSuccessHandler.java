@@ -3,6 +3,7 @@ package com.fishedee.security_boost;
 import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.ServletException;
@@ -21,7 +22,7 @@ public class DefaultWriteTenantAfterAuthSuccessHandler implements WriteTenantAft
     private SecurityBoostProperties properties;
 
     @Override
-    public void onHandle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+    public void onHandle(HttpServletRequest request, HttpServletResponse response){
         String tenantId = securityTenantResolver.getTenantId();
         if( tenantId == null ){
             return;

@@ -8,5 +8,5 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 public interface WriteTenantAfterAuthSuccessHandler {
-    public void onHandle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException ;
+    public void onHandle(HttpServletRequest request, HttpServletResponse response) ;
 }

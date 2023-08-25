@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Configuration
 @Profile({"production"})
-public class MyTenantConfig implements WebMvcConfigurer {
+public class MyTenantConfig  {
     @Bean("firstDataSource")
     @ConfigurationProperties(prefix="spring.datasource.first")
     public DataSource firstDataSource(){
@@ -63,11 +63,4 @@ public class MyTenantConfig implements WebMvcConfigurer {
         return new CheckTenantFilter();
     }
 
-    @Autowired
-    private CheckTenantFilter checkTenantFilter;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(checkTenantFilter);
-    }
-}
+   }
