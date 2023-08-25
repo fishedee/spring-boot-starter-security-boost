@@ -37,6 +37,13 @@ export default class CheckIn extends React.Component {
                   activeKey={"account"}>
               <Tab key="account" tab="账户密码登录">
                 <Form onSubmit={this.onSubmit}>
+                <FormItem>
+                  {getFieldDecorator('tenantId', {
+                    rules: [{ required: true, message: '请输入你的租户ID!' }],
+                  })(
+                    <Input  size={'large'} prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={'请输入租户,tenant1/tenant2'} autocomplete="off"/>
+                  )}
+                  </FormItem>
                   <FormItem>
                   {getFieldDecorator('userName', {
                     rules: [{ required: true, message: '请输入你的用户名!' }],

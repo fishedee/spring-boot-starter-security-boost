@@ -9,18 +9,24 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 
 @Slf4j
@@ -42,6 +48,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     private AuthFailureHandler authFailureHandler;
 
     @Autowired
+    private WriteTenantAfterAuthSuccessHandler writeTenantAfterAuthSuccessHandler;
+
+    @Autowired
     private MySessionInformationExpiredStrategy sessionInformationExpiredStrategy;
 
     @Autowired
@@ -52,9 +61,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private IsLoginFilter isLoginFilter;
 
     @Autowired
     private SecurityBoostProperties securityBoostProperties;
@@ -107,7 +113,13 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                     .rememberMeParameter(securityBoostProperties.getRememberMeParameter())
                     .userDetailsService(defaultUserDetailService)
                     .tokenRepository(jdbcTokenRepository)
-                    .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds());
+                    .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds())
+                    .authenticationSuccessHandler(new AuthenticationSuccessHandler(){
+                        @Override
+                        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
+                            writeTenantAfterAuthSuccessHandler.onHandle(request,response);
+                        }
+                    });
         }
 
         http
@@ -137,8 +149,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 //.invalidSessionStrategy(invalidSessionStrategy)
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
-
-        http.addFilterAfter(isLoginFilter, AnonymousAuthenticationFilter.class);
 
         if( securityBoostProperties.isSwitchLoginEnable() ){
             http.addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class);

@@ -43,6 +43,18 @@ public class SecurityBoostAutoConfiguration {
         return new DefaultUserDetailService();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(SecurityTenantResolver.class)
+    public SecurityTenantResolver securityTenantResolver(){
+        return new DefaultSecurityTenantResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(WriteTenantAfterAuthSuccessHandler.class)
+    public WriteTenantAfterAuthSuccessHandler writeTenantHandler(){
+        return new DefaultWriteTenantAfterAuthSuccessHandler();
+    }
+
     //默认的认证失败处理
     @Bean
     @ConditionalOnMissingBean(AuthFailureHandler.class)
@@ -107,6 +119,7 @@ public class SecurityBoostAutoConfiguration {
         return new DefaultLoginUserHolderImpl();
     }
 
+    /* 不能在Filter里面做isLogin检查，因为RememberMeFilter有时候会直接忽略后面所有的Filter
     //默认的loginController
     @Bean
     @ConditionalOnMissingBean(IsLoginFilter.class)
@@ -114,4 +127,5 @@ public class SecurityBoostAutoConfiguration {
     public IsLoginFilter isLoginFilter(){
         return new IsLoginFilter();
     }
+     */
 }

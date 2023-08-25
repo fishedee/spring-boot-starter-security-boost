@@ -15,7 +15,11 @@ public class SecurityConfiguration extends SecurityBoostConfiguration {
 
     @Override
     protected void configureAuthorizeRequests(HttpSecurity http) throws Exception{
-        http.authorizeRequests()
+        http.csrf()
+                .ignoringAntMatchers("/login/islogin")
+                .and()
+                .authorizeRequests()
+                .antMatchers("/login/islogin").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/index.html").permitAll()

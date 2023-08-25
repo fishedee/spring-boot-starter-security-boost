@@ -13,6 +13,7 @@ export default class LoginPage extends React.Component{
 		await this.props.dispatch({
 			type:'login/login',
 			payload:{
+				tenantId:value.tenantId,
 				user:value.userName,
 				password:value.password,
 				"remember-me":value.isRemember,

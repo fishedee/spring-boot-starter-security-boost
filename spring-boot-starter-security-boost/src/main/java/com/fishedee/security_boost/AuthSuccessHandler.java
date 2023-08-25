@@ -22,12 +22,18 @@ public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHa
     @Autowired
     ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
+    private WriteTenantAfterAuthSuccessHandler writeTenantAfterAuthSuccessHandler;
+
     @Override
     public void onAuthenticationSuccess(javax.servlet.http.HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
+
+        //写入租户
+        writeTenantAfterAuthSuccessHandler.onHandle(request,response);
 
         String result = mapper.writeValueAsString(new SecurityBoostResponse(0,"",authentication.getPrincipal()));
 

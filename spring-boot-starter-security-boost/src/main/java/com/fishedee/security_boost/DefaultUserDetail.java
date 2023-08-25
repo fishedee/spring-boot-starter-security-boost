@@ -19,6 +19,8 @@ import java.util.Locale;
 public class DefaultUserDetail implements UserDetails {
     private static final long serialVersionUID = 4359709211352400087L;
 
+    private String tenantId;
+
     private String id;
 
     private String name;
@@ -81,7 +83,18 @@ public class DefaultUserDetail implements UserDetails {
     @Override
     public boolean equals(Object obj){
         if( obj instanceof DefaultUserDetail){
-            return this.getUsername().equals(((DefaultUserDetail) obj).getUsername());
+            DefaultUserDetail right = (DefaultUserDetail)obj;
+            if( this.getUsername().equals(right.getUsername()) == false ){
+                return false;
+            }
+            String tenantId = this.getTenantId();
+            if( tenantId == null ){
+                return right.getTenantId() == null;
+            }
+            if( tenantId.equals(right.getTenantId()) == false ){
+                return false;
+            }
+            return true;
         }else{
             return false;
         }
@@ -89,6 +102,12 @@ public class DefaultUserDetail implements UserDetails {
 
     @Override
     public int hashCode(){
-        return this.getUsername().hashCode();
+        String link = "";
+        if( this.getTenantId() == null ){
+            link = "0#"+ this.getUsername();
+        }else{
+            link = this.getTenantId()+"#"+this.getUsername();
+        }
+        return link.hashCode();
     }
 }

@@ -19,8 +19,6 @@ public class SecurityBoostProperties {
 
     private String logoutUrl = "/login/logout";
 
-    private String isLoginUrl = "/login/islogin";
-
     private boolean switchLoginEnable = true;
 
     private String switchLoginUrl = "/login/switch";
@@ -32,4 +30,8 @@ public class SecurityBoostProperties {
     private String rememberMeParameter = "remember-me";
 
     private int rememberMeSeconds = 60*60*24*7;//7天
+
+    private String tenantCookieName = "tenant_id";
+
+    private int tenantCookieAge = 60*60*24*7;//7天
 }
