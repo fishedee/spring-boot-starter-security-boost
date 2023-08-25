@@ -24,6 +24,9 @@ public class DefaultUserDetailService implements UserDetailsService {
     @Autowired
     private SecurityBoostProperties securityBoostProperties;
 
+    @Autowired
+    private SecurityTenantResolver tenantResolver;
+
     private String selectByNameSql;
 
     @PostConstruct
@@ -40,6 +43,8 @@ public class DefaultUserDetailService implements UserDetailsService {
             //这个异常是固定的,不能改其他的
             throw new UsernameNotFoundException("用户不存在");
         }
-        return userList.get(0);
+        DefaultUserDetail userDetail = userList.get(0);
+        userDetail.setTenantId(tenantResolver.getTenantId());
+        return userDetail;
     }
 }

@@ -25,6 +25,12 @@ public class SecurityBoostAutoConfiguration {
         this.properties = properties;
     }
 
+    @Bean
+    @ConditionalOnMissingBean(RememberMeSuccessListener.class)
+    @ConditionalOnProperty(value = "spring.security-boost.enable", havingValue = "true")
+    public RememberMeSuccessListener rememberMeSuccessListener(){
+        return new RememberMeSuccessListener();
+    }
 
     //密码编码器默认Bean
     @Bean
@@ -41,6 +47,18 @@ public class SecurityBoostAutoConfiguration {
     @ConditionalOnProperty(value = "spring.security-boost.enable", havingValue = "true")
     public UserDetailsService userDetailsService(){
         return new DefaultUserDetailService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SecurityTenantResolver.class)
+    public SecurityTenantResolver securityTenantResolver(){
+        return new DefaultSecurityTenantResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(WriteTenantAfterAuthSuccessHandler.class)
+    public WriteTenantAfterAuthSuccessHandler writeTenantHandler(){
+        return new DefaultWriteTenantAfterAuthSuccessHandler();
     }
 
     //默认的认证失败处理

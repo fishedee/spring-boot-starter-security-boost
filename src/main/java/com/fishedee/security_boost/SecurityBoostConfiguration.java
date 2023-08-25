@@ -9,18 +9,24 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 
 @Slf4j
@@ -42,6 +48,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     private AuthFailureHandler authFailureHandler;
 
     @Autowired
+    private WriteTenantAfterAuthSuccessHandler writeTenantAfterAuthSuccessHandler;
+
+    @Autowired
     private MySessionInformationExpiredStrategy sessionInformationExpiredStrategy;
 
     @Autowired
@@ -54,13 +63,13 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private IsLoginFilter isLoginFilter;
-
-    @Autowired
     private SecurityBoostProperties securityBoostProperties;
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private IsLoginFilter isLoginFilter;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -99,7 +108,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
         }else{
             http.csrf().disable();
         }
-
         if( securityBoostProperties.isRememberMeEnabled() ){
             //记住我,必须用check-box传入一个remeber-me的字段
             //使用记住我以后,maximumSessions为1是没有意义的,因为他能被自动登录
@@ -108,6 +116,8 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                     .userDetailsService(defaultUserDetailService)
                     .tokenRepository(jdbcTokenRepository)
                     .tokenValiditySeconds(securityBoostProperties.getRememberMeSeconds());
+            //这里不能直接用authenticationSuccessHandler，看[这里](https://github.com/spring-projects/spring-security/issues/13743)
+            //.authenticationSuccessHandler()
         }
 
         http

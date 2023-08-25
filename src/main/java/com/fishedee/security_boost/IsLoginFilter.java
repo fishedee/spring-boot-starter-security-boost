@@ -1,6 +1,5 @@
 package com.fishedee.security_boost;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -46,11 +45,9 @@ public class IsLoginFilter extends HttpFilter {
         if( loginUser != null){
             userDetails = loginUser.getUserDetails();
         }
-        log.info("islogin {}",userDetails);
         String result = objectMapper.writeValueAsString(new SecurityBoostResponse(0,"",userDetails));
         PrintWriter writer = response.getWriter();
         writer.write(result);
         writer.flush();
     }
 }
-

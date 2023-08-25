@@ -32,4 +32,8 @@ public class SecurityBoostProperties {
     private String rememberMeParameter = "remember-me";
 
     private int rememberMeSeconds = 60*60*24*7;//7天
+
+    private String tenantCookieName = "tenant_id";
+
+    private int tenantCookieAge = 60*60*24*7;//7天
 }
