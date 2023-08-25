@@ -10,6 +10,7 @@ SpringBoost的Security工具库，功能包括有：
 * csrf，防csrf攻击
 * session会话数量限制，默认一个用户同时只能用一个会话
 * switchUser，切换用户
+* securityTenantResolver，支持多租户
 
 ## 安装
 
