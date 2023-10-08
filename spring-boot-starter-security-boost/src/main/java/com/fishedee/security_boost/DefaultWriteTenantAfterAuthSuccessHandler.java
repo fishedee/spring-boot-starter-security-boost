@@ -34,7 +34,7 @@ public class DefaultWriteTenantAfterAuthSuccessHandler implements WriteTenantAft
             //设置Cookie的有效时间，单位为秒
             nameCookie.setMaxAge(properties.getTenantCookieAge());
             nameCookie.setPath("/");
-            nameCookie.setHttpOnly(true);
+            //nameCookie.setHttpOnly(true);
             //通过response的addCookie()方法将此Cookie对象保存到客户端浏览器的Cookie中
             response.addCookie(nameCookie);
         }catch(UnsupportedEncodingException e){

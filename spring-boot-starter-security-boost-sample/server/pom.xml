@@ -4,7 +4,7 @@
 
   <groupId>com.fishedee.web_boost</groupId>
   <artifactId>spring-boot-starter-security-boost-sample</artifactId>
-  <version>1.4</version>
+  <version>1.5</version>
   <packaging>jar</packaging>
 
   <name>spring-boot-starter-security-boost-sample</name>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>com.fishedee.security_boost</groupId>
       <artifactId>spring-boot-starter-security-boost</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
