@@ -21,16 +21,21 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.session.SessionManagementFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Slf4j
 public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
+
+    public static Set<String> unLimitSessionTenantSet = new HashSet<>();
 
     @Autowired
     private UserDetailsService defaultUserDetailService;
@@ -99,6 +104,10 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //配置unlimitTenant
+        SecurityBoostConfiguration.unLimitSessionTenantSet = new HashSet<>(this.securityBoostProperties.getUnLimitSessionTenant());
+
+        //配置httpSecurity
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
         jdbcTokenRepository.setDataSource(dataSource);
 

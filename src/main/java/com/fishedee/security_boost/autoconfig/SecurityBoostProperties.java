@@ -4,6 +4,9 @@ package com.fishedee.security_boost.autoconfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @ConfigurationProperties(prefix="spring.security-boost")
 public class SecurityBoostProperties {
@@ -36,4 +39,6 @@ public class SecurityBoostProperties {
     private String tenantCookieName = "tenant_id";
 
     private int tenantCookieAge = 60*60*24*7;//7天
+
+    private List<String> unLimitSessionTenant = new ArrayList<>();//没有同时登录人数限制的租户
 }
