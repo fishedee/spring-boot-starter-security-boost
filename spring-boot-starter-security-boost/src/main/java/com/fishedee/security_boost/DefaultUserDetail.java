@@ -91,6 +91,11 @@ public class DefaultUserDetail implements UserDetails {
             if( tenantId == null ){
                 return right.getTenantId() == null;
             }
+            if( SecurityBoostConfiguration.unLimitSessionTenantSet.contains(tenantId)){
+                //当这个租户不限制同时登录人数的时候，equals总是返回false
+                //以保证同一个用户可以多次登录
+                return false;
+            }
             if( tenantId.equals(right.getTenantId()) == false ){
                 return false;
             }

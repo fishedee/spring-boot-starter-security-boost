@@ -46,7 +46,7 @@
     <dependency>
       <groupId>com.fishedee.security_boost</groupId>
       <artifactId>spring-boot-starter-security-boost</artifactId>
-      <version>1.5</version>
+      <version>1.6</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
