@@ -1,5 +1,6 @@
 package com.fishedee.security_boost.sample.multi_tenant;
 
+import com.fishedee.security_boost.SecuritySceneResolver;
 import com.fishedee.security_boost.SecurityTenantResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -56,6 +57,12 @@ public class MyTenantConfig  {
     @Primary
     public SecurityTenantResolver securityTenantResolver(){
         return new MySecurityTenantResolver();
+    }
+
+    @Bean
+    @Primary
+    public SecuritySceneResolver securitySceneResolver(){
+        return new MySecuritySceneResolver();
     }
 
     @Bean

@@ -67,6 +67,15 @@ export default class CheckIn extends React.Component {
                     </Checkbox>,
                   )}
                   </FormItem>
+                  <FormItem {...tailFormItemLayout}>
+                  {getFieldDecorator('isMobile', {
+                    valuePropName: 'checked',
+                  })(
+                    <Checkbox size={'large'}>
+                      手机场景登录
+                    </Checkbox>,
+                  )}
+                  </FormItem>
                   <Button className={styles.login} type='primary' size="large" icon="poweroff" loading={this.props.loading} htmlType='submit'>登录</Button>
                 </Form>
               </Tab>

@@ -52,6 +52,23 @@ function checkBody(response){
   throw error;
 }
 
+var loginSceneId = undefined;
+
+function setLoginSceneId(loginSceneId){
+  localStorage.setItem('loginSceneId',loginSceneId);
+}
+
+function getLoginSceneId(){
+  const result = localStorage.getItem('loginSceneId');
+  if(!result){
+    return "";
+  }
+  return result;
+}
+
+export {
+  setLoginSceneId,
+}
 export default async function request(url, options) {
   const defaultOptions = {
     credentials: 'include',
@@ -60,7 +77,8 @@ export default async function request(url, options) {
   	...defaultOptions, 
   	...options,
     headers:{
-      'X-XSRF-TOKEN':getCookie('XSRF-TOKEN')
+      'X-XSRF-TOKEN':getCookie('XSRF-TOKEN'),
+      'X-LOGIN-SCENE':getLoginSceneId(),
     },
   	query:{
   		_t:new Date().valueOf(),

@@ -6,10 +6,13 @@ import {copyright,title} from '@/utils/constant';
 import style from './Login.less';
 import qs from 'qs';
 import {connect} from 'redva';
+import {setLoginSceneId} from '@/utils/request';
 
 @connect()
 export default class LoginPage extends React.Component{
 	onSubmit = async (value)=>{
+		//设置登录场景
+		setLoginSceneId(value.isMobile?'mobile':'');
 		await this.props.dispatch({
 			type:'login/login',
 			payload:{

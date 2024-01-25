@@ -21,6 +21,8 @@ public class DefaultUserDetail implements UserDetails {
 
     private String tenantId;
 
+    private String sceneId;
+
     private String id;
 
     private String name;
@@ -80,6 +82,13 @@ public class DefaultUserDetail implements UserDetails {
         return this.is_enabled.equalsIgnoreCase("enable");
     }
 
+    public String getSceneId(){
+        if( this.sceneId == null ){
+            return "";
+        }
+        return this.sceneId;
+    }
+
     @Override
     public boolean equals(Object obj){
         if( obj instanceof DefaultUserDetail){
@@ -99,6 +108,10 @@ public class DefaultUserDetail implements UserDetails {
             if( tenantId.equals(right.getTenantId()) == false ){
                 return false;
             }
+            //登录场景校验
+            if( this.getSceneId().equals(right.getSceneId()) == false ){
+                return false;
+            }
             return true;
         }else{
             return false;
@@ -108,11 +121,12 @@ public class DefaultUserDetail implements UserDetails {
     @Override
     public int hashCode(){
         String link = "";
-        if( this.getTenantId() == null ){
-            link = "0#"+ this.getUsername();
-        }else{
-            link = this.getTenantId()+"#"+this.getUsername();
+        String tenantId = "0";
+        if( this.getTenantId() != null ){
+            tenantId = this.getTenantId();
         }
+        String sceneId = this.getSceneId();
+        link = tenantId+"#"+sceneId+"#"+this.getUsername();
         return link.hashCode();
     }
 }

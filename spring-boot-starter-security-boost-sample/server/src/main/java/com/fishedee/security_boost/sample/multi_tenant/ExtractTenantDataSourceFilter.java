@@ -14,6 +14,10 @@ public class ExtractTenantDataSourceFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException{
         HttpServletRequest httpRequest = (HttpServletRequest)request;
         HttpServletResponse httpResponse = (HttpServletResponse)response;
+        //设置登录场景信息
+        String sceneId = MySecuritySceneHolder.getSceneIdByRequest(httpRequest);
+
+        //设置租户信息
         String tenantId = MyTenantHolder.getTenantIdByRequest(httpRequest);
         log.info("ExtractTenantDataSourceFilter filter, uri: {}",httpRequest.getRequestURI());
         if(Strings.isBlank(tenantId)){
@@ -37,10 +41,12 @@ public class ExtractTenantDataSourceFilter implements Filter {
             return;
         }
         try{
+            MySecuritySceneHolder.setSceneId(sceneId);
             MyTenantHolder.setTenantId(tenantId);
             chain.doFilter(request,response);
         }finally {
             MyTenantHolder.clearTenant();
+            MySecuritySceneHolder.clearScene();
         }
     }
 }

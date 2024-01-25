@@ -17,6 +17,7 @@ create table persistent_logins(
       series varchar(64) not null,
       token varchar(64) not null,
       last_used datetime not null,
+      scene_id varchar(64) not null,
       primary key(series)
 );
 
@@ -45,6 +46,7 @@ create table persistent_logins(
           series varchar(64) not null,
           token varchar(64) not null,
           last_used datetime not null,
+          scene_id varchar(64) not null,
           primary key(series)
 );
 
