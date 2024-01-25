@@ -11,6 +11,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 @Slf4j
 @Configuration
@@ -56,9 +57,21 @@ public class SecurityBoostAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(SecuritySceneResolver.class)
+    public SecuritySceneResolver securitySceneResolver(){
+        return new DefaultSecuritySceneResolver();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(WriteTenantAfterAuthSuccessHandler.class)
     public WriteTenantAfterAuthSuccessHandler writeTenantHandler(){
         return new DefaultWriteTenantAfterAuthSuccessHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PersistentTokenRepository.class)
+    public PersistentTokenRepository persistentTokenRepository(){
+        return new JdbcTokenRepositorySceneAwareImpl();
     }
 
     //默认的认证失败处理

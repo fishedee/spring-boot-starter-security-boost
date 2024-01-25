@@ -5,11 +5,14 @@ import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,9 +21,13 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 
 import javax.servlet.ServletException;
@@ -71,7 +78,10 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     private SecurityBoostProperties securityBoostProperties;
 
     @Autowired
-    private DataSource dataSource;
+    private PersistentTokenRepository jdbcTokenRepository;
+
+    @Autowired
+    private RememberMeSuccessListener rememberMeSuccessListener;
 
     @Autowired
     private IsLoginFilter isLoginFilter;
@@ -108,9 +118,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
         SecurityBoostConfiguration.unLimitSessionTenantSet = new HashSet<>(this.securityBoostProperties.getUnLimitSessionTenant());
 
         //配置httpSecurity
-        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
-        jdbcTokenRepository.setDataSource(dataSource);
-
         if( securityBoostProperties.isCsrfEnable()){
             http.csrf()
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
@@ -128,7 +135,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
             //这里不能直接用authenticationSuccessHandler，看[这里](https://github.com/spring-projects/spring-security/issues/13743)
             //.authenticationSuccessHandler()
         }
-
         http
                 //设置认证异常与授权异常的处理
                 .exceptionHandling()
@@ -156,6 +162,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 //.invalidSessionStrategy(invalidSessionStrategy)
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
+
+        //设置延迟获取的sessionStrategy
+        rememberMeSuccessListener.setHttpSecurity(http);
 
         http.addFilterAfter(isLoginFilter, AnonymousAuthenticationFilter.class);
 

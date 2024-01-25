@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.sql.Types;
@@ -27,6 +26,9 @@ public class DefaultUserDetailService implements UserDetailsService {
     @Autowired
     private SecurityTenantResolver tenantResolver;
 
+    @Autowired
+    private SecuritySceneResolver sceneResolver;
+
     private String selectByNameSql;
 
     @PostConstruct
@@ -45,6 +47,7 @@ public class DefaultUserDetailService implements UserDetailsService {
         }
         DefaultUserDetail userDetail = userList.get(0);
         userDetail.setTenantId(tenantResolver.getTenantId());
+        userDetail.setSceneId(sceneResolver.getSceneId());
         return userDetail;
     }
 }
