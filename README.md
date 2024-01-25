@@ -11,6 +11,7 @@ SpringBoost的Security工具库，功能包括有：
 * session会话数量限制，默认一个用户同时只能用一个会话，也可以指定部分租户下的用户不限制同时会话数量
 * switchUser，切换用户
 * securityTenantResolver，支持多租户
+* securitySceneResolver，支持同一个用户多终端同时登录，同一个用户相同终端的时候自动踢下线
 
 ## 安装
 
@@ -25,7 +26,7 @@ SpringBoost的Security工具库，功能包括有：
 <dependency>
     <groupId>com.github.fishedee</groupId>
     <artifactId>spring-boot-starter-security-boost</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
 </dependency>
 ```
 
@@ -56,6 +57,7 @@ create table persistent_logins(
       series varchar(64) not null,
       token varchar(64) not null,
       last_used datetime not null,
+      scene_id varchar(64) not null,
       primary key(series)
 );
 

@@ -5,10 +5,12 @@ import com.fishedee.security_boost.autoconfig.SecurityBoostProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +24,7 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
@@ -78,6 +81,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
     private PersistentTokenRepository jdbcTokenRepository;
 
     @Autowired
+    private RememberMeSuccessListener rememberMeSuccessListener;
+
+    @Autowired
     private IsLoginFilter isLoginFilter;
 
     @Override
@@ -129,7 +135,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
             //这里不能直接用authenticationSuccessHandler，看[这里](https://github.com/spring-projects/spring-security/issues/13743)
             //.authenticationSuccessHandler()
         }
-
         http
                 //设置认证异常与授权异常的处理
                 .exceptionHandling()
@@ -139,6 +144,12 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 //表单登录的处理
                 //必须要用urlEncode的参数来传入
                 .formLogin()
+                .withObjectPostProcessor(new ObjectPostProcessor<FormLoginConfigurer<HttpSecurity>>() {
+                    public <O extends FormLoginConfigurer<HttpSecurity>> O postProcess(O fsi){
+                        log.info("a {}",fsi);
+                        return fsi;
+                    }
+                })
                 .permitAll()
                 .loginProcessingUrl(securityBoostProperties.getLoginUrl())
                 .usernameParameter(securityBoostProperties.getLoginUsernameParameter())//登录的用户名字段名称
@@ -157,6 +168,9 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 //.invalidSessionStrategy(invalidSessionStrategy)
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
+
+        //设置延迟的sessionStrategy
+        rememberMeSuccessListener.setHttpSecurity(http);
 
         http.addFilterAfter(isLoginFilter, AnonymousAuthenticationFilter.class);
 
