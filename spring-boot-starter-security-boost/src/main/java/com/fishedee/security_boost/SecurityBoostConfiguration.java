@@ -144,12 +144,6 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 //表单登录的处理
                 //必须要用urlEncode的参数来传入
                 .formLogin()
-                .withObjectPostProcessor(new ObjectPostProcessor<FormLoginConfigurer<HttpSecurity>>() {
-                    public <O extends FormLoginConfigurer<HttpSecurity>> O postProcess(O fsi){
-                        log.info("a {}",fsi);
-                        return fsi;
-                    }
-                })
                 .permitAll()
                 .loginProcessingUrl(securityBoostProperties.getLoginUrl())
                 .usernameParameter(securityBoostProperties.getLoginUsernameParameter())//登录的用户名字段名称
@@ -169,7 +163,7 @@ public class SecurityBoostConfiguration extends WebSecurityConfigurerAdapter {
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
 
-        //设置延迟的sessionStrategy
+        //设置延迟获取的sessionStrategy
         rememberMeSuccessListener.setHttpSecurity(http);
 
         http.addFilterAfter(isLoginFilter, AnonymousAuthenticationFilter.class);

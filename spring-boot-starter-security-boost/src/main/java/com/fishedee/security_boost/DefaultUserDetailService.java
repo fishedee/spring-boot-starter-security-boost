@@ -48,8 +48,6 @@ public class DefaultUserDetailService implements UserDetailsService {
         DefaultUserDetail userDetail = userList.get(0);
         userDetail.setTenantId(tenantResolver.getTenantId());
         userDetail.setSceneId(sceneResolver.getSceneId());
-
-        log.info("currentUserDetail {}",userDetail);
         return userDetail;
     }
 }
